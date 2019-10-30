@@ -1,29 +1,39 @@
 
-P0 = [1,2]; // Leerlauf punkt
-Pk = [3,4]; // zuerst X , dann Y koordinate
-Punend = [4,2]; // mit der formel (x-m1)^2 + (y-m2)^2 = r^2 kann man sich mittelpunkt und Radius mittels der drei Punkte berechnen
+// Ortskruve zeicnen
+// Random werte für die Punkte definieren
+P0x = 1;
+P0y = 1;
+Pkx = 3;
+Pky = 3;
+Punx = 4;// unendlich  = un
+Puny = 2; 
 
-function[f] = F(x)
-    f(1) = (1-x(1))^2+(2-x(2))-x(3)^2
-    f(2) = (3-x(1))^2+(4-x(2))-x(3)^2
-    f(3) = (4-x(1))^2+(2-x(2))-x(3)^2
-endfunction
+// Punkte als matrix
 
-x = [2; 111; 19];
-//y = fsolve(x,F);
+P0 = [P0x, P0y];
+Pk = [Pkx, Pky];
+Pun = [Punx, Puny]; // Unendlichkeitspunkt
 
-function[g] = G(x)
-    g(1) = x(1)^2+x(2)^2+x(3)^2-3;
-    g(2) = x(1)*x(2)*x(3)-1;
-    g(3) = x(1)^3+x(2)^2 -2*x(3)^2;
-endfunction
+// Matrizen zum Lösen der Linearen Gleichung
+MatrixA = [1, 2*P0x, 2*P0y; 1, 2*Pkx, 2*Pky; 1, 2*Punx, 2*Puny]
+MatrixX = ones(3,1);
+MatrixB = [P0x^2*P0y^2; Pkx^2*Pky^2; Punx^2*Puny^2];
 
-function[j] = jacob(x)
-    j(1,1) = 2*x(1); j(1,2) = 2*x(2);j(1,3) = 2*x(3);
-    j(2,1) = x(2)*x(3); j(2,2) = x(1)*x(3);j(2,3) = x(1)*x(2);
-    j(3,1) = 3*x(1)^2; j(3,2) = 2*x(2);j(3,3) = -4*x(3);
-endfunction
+MatrixX = inv(MatrixA)*MatrixB;
 
-[x,v,info]=fsolve(x,G,jacob);
-disp(x)
-disp(y);
+A = MatrixX(1,1);
+B = MatrixX(2,1);
+C = MatrixX(3,1);
+
+radius = sqrt(MatrixX(1,1));
+m1 = zeros(2,1);
+m2 = zeros(2,1);
+
+m1(1,1) = (-1+sqrt(1+4*-1*-2*P0x*B))/-2
+m1(2,1) = (-1-sqrt(1+4*-1*-2*P0x*B))/-2
+
+m2(1,1) = (-1+sqrt(1+4*-1*-2*P0y*C))/-2
+m2(2,1) = (-1-sqrt(1+4*-1*-2*P0y*C))/-2
+
+MittelpunktX = m1(2,1);
+MittelpunktY = m2(2,1);
