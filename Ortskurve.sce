@@ -1,7 +1,9 @@
-// Punkte und formel bite
+
+// Hier wird die Ortskurve gezeichnet 
+
 P1x = 1;
 P1y = 1;
-Pkx = 3;
+Pkx = 3; // Die punkte müssen noch errechnet werden, derweil werden sie nur so geschrieben
 Pky = 3;
 P3x = 4;
 P3y = 2;
@@ -37,3 +39,17 @@ plot(Pkx, Pky, '+');
 plot(P3x, P3y, '+');
 plot(Mx, My, '+');
 
+// Hier endet das Zeichnen der Ortskurve
+
+// Hier wird Zk berechnet
+Uk = 32.23; 
+Ik = 5.3;
+
+Pk = Uk * Ik; // Das ist die Scheinleistung was berechnet wird
+Rk = Uk/Ik;
+Xs = (sqrt((Uk*Ik)^2-Pk^2))/Ik^2;
+
+Zk = Rk + %i *Xs;
+
+disp(Zk);
+// Hier endet das Berechnen von Zk
