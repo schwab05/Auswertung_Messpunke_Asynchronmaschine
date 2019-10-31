@@ -1,39 +1,39 @@
-
-// Ortskruve zeicnen
-// Random werte für die Punkte definieren
-P0x = 1;
-P0y = 1;
+// Punkte und formel bite
+P1x = 1;
+P1y = 1;
 Pkx = 3;
 Pky = 3;
-Punx = 4;// unendlich  = un
-Puny = 2; 
+P3x = 4;
+P3y = 2;
+// Mit der Formel (x-mx)^2+(y-my)^2-r^2 = 0 bekommt man mittelpunkt und radius
+// Die drei Punkte werden als x und y in die drei Formeln eingesetzt und mit fsolve wird der Mittelpunkt und radius errechnet.
+function[f] = F(x)
+    f(1) = (P1x-x(1))^2+(P1y-x(2))^2-x(3)^2 // x(1) entspricht m1, X(2) entsprciht m2 und x(3) entspricht dem Radius
+    f(2) = (Pkx-x(1))^2+(Pky-x(2))^2-x(3)^2
+    f(3) = (P3x-x(1))^2+(P3y-x(2))^2-x(3)^2 
+endfunction
+// Initial guess
+x = [3; 11; 1];
+// Nichtlineare Gleichung muss mit fsolve gelöst werden
+[x,v,info]=fsolve(x,F);
+disp(x);
 
-// Punkte als matrix
+Mx = x(1,1); // Mittelpunkt X-Koordinate
+My = x(2,1); // Mittelpunkt Y-Koordinate
+r = x(3,1); // Radius
 
-P0 = [P0x, P0y];
-Pk = [Pkx, Pky];
-Pun = [Punx, Puny]; // Unendlichkeitspunkt
+if r < 0 then   // Manchmal erhält man für den Radius einen Negativen Wert deshalb
+    r = r *-1;
+end
 
-// Matrizen zum Lösen der Linearen Gleichung
-MatrixA = [1, 2*P0x, 2*P0y; 1, 2*Pkx, 2*Pky; 1, 2*Punx, 2*Puny]
-MatrixX = ones(3,1);
-MatrixB = [P0x^2*P0y^2; Pkx^2*Pky^2; Punx^2*Puny^2];
+// die Punkte x und y des Kreises defineren (360 Stück)
+angle = linspace(0, 2*%pi, 360);
+x = Mx + r *cos(angle);
+y = My + r *sin(angle);
 
-MatrixX = inv(MatrixA)*MatrixB;
+plot(x,y);
+plot(P1x, P1y,'+');
+plot(Pkx, Pky, '+');
+plot(P3x, P3y, '+');
+plot(Mx, My, '+');
 
-A = MatrixX(1,1);
-B = MatrixX(2,1);
-C = MatrixX(3,1);
-
-radius = sqrt(MatrixX(1,1));
-m1 = zeros(2,1);
-m2 = zeros(2,1);
-
-m1(1,1) = (-1+sqrt(1+4*-1*-2*P0x*B))/-2
-m1(2,1) = (-1-sqrt(1+4*-1*-2*P0x*B))/-2
-
-m2(1,1) = (-1+sqrt(1+4*-1*-2*P0y*C))/-2
-m2(2,1) = (-1-sqrt(1+4*-1*-2*P0y*C))/-2
-
-MittelpunktX = m1(2,1);
-MittelpunktY = m2(2,1);
