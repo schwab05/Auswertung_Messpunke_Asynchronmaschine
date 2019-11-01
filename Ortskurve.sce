@@ -93,14 +93,13 @@ while counterWerte <= AnzahlWerte(1,1)
 end
 
 plot(Mx, My, '+');
-/*
 // Hier endet das Zeichnen der Ortskurve
 
 // Hier wird Zk berechnet
 
-Pk = Uwk*Iwk*alphak/skalak; // Das ist die Scheinleistung was berechnet wird
-Rk = Pk/real(Ik_komp);
-Xs = (sqrt((Uk*Ik)^2-Pk^2))/Ik^2;
+Pk = Uw(1,1)*Iw(1,1)*alpha(1,1)/skala(1,1); // Das ist die Scheinleistung was berechnet wird
+Rk = Pk/real(I_komp(1,1));
+Xs = (sqrt(U(1,1)*I(1,1)^2-Pk^2))/I(1,1)^2; // Passt noch nicht, weil es nicht sicher ist das der Erste messwert der Messwert im Kurzschlusspunkt ist
 
 Zk = Rk + %i *Xs;
 
@@ -109,13 +108,13 @@ disp(Zk, "Zk=");
 
 // Anfang: Prüfen ob ein Punkt auf dem Kreis liegt
 counter = 1;
-while   counter < 360
-    if P2x <= x(1,counter)+0.005 then
-        if P2x >= x(1,counter)-0.005 then
+while   counter < 360 // Passt noch nicht weil der Punkt (px) Variabl sein muss, sowie auch deie Abweichung (0,5)
+    if Px(1,1) <= x(1,counter)+0.05 then
+        if Px(1,1) >= x(1,counter)-0.05 then
             disp("Juhu");
             test = 3;
         end
     end
     counter = counter + 1;
 end
-*/
+// Ende: Prüfen ob ein Punkt auf dem Kreis liegt
