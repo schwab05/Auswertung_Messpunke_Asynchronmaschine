@@ -47,8 +47,8 @@ Pky = real(Ik_komp);
 P2x = imag(I2_komp); 
 P2y = real(I2_komp);
 
-P2x = imag(I2_komp);
-P2y = real(I2_komp);
+P3x = imag(I3_komp);
+P3y = real(I3_komp);
     // Ende Punkte für die Ortskurve ausrechnen
 
 function[f] = F(x)
