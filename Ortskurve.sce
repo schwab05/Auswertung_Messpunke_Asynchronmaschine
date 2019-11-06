@@ -59,6 +59,8 @@ P2y = real(I2_komp);
 
 P2x = imag(I2_komp);
 P2y = real(I2_komp);*/
+
+
     // Ende Punkte für die Ortskurve ausrechnen
 
 function[f] = F(x)
@@ -66,9 +68,10 @@ function[f] = F(x)
     f(2) = (Px(2,1)-x(1))^2+(Py(2,1)-x(2))^2-x(3)^2 // Mit der Formel (x-mx)^2+(y-my)^2-r^2 = 0 bekommt man mittelpunkt und radius
     f(3) = (Px(3,1)-x(1))^2+(Py(3,1)-x(2))^2-x(3)^2  // Die drei Punkte werden als x und y in die drei Formeln eingesetzt und mit fsolve wird der Mittelpunkt und radius errechnet.
 endfunction
-x = [3; 11; 1]; // Initial guess
-[x,v,info]=fsolve(x,F);// Nichtlineare Gleichung muss mit fsolve gelöst werden
 
+x = [30; 111; 13]; // Initial guess
+[x,v,info]=fsolve(x,F);// Nichtlineare Gleichung muss mit fsolve gelöst werden
+disp(x);
 Mx = x(1,1); // Mittelpunkt X-Koordinate
 My = x(2,1); // Mittelpunkt Y-Koordinate
 r = x(3,1); // Radius
