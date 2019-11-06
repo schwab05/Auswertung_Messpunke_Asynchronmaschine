@@ -6,9 +6,9 @@ phi = [63; 77; 54; 58.7; 80; 71.5];
 // Nur Betrag und Phase von Spannung und Strom
 // Werte einlesen:
 // Werte werden mittel Auswerteverhafren ausgeählt, wird sich also alles noch verändern
-I = [0.37; 0.5; 0.78; 10 ;4 ;2 ]; // In AmpereI = [0.22; 0.255; 0.289; 0.37; 0.5; 0.78];
+I = [1; 2; 0.78; 10 ;4 ;2 ]; // In AmpereI = [0.22; 0.255; 0.289; 0.37; 0.5; 0.78];
 U = [ 189.8; 246.8; 304.1; 39; 80; 150]; // In Volt
-phi = [58.7; 80; 71.5; 63; 77; 54];
+phi = [50; 60; 80; 63; 77; 54];
 /*Uw = [50; 100; 250]; // Spannungseinstellung des Wattmeters in Volt
 Iw = [25; 5; 5]; // Stromeinstellung des Wattmeters in Ampere
 alpha = [14; 14; 14]; // Zeigerausschlag des Wattmeters
@@ -107,30 +107,54 @@ while fehler == 1 // Achtung noch in der Schleife das nicht immer die gleichen W
         fehlercounter = fehlercounter +1
     end
 end
-    // Anfang Punkte zeichnen
+    // Anfang Punkte rechnen
 counter = 1;
 while counter <= Punkte
     plot(Px(counter,1), Py(counter,1),'+');
     counter = counter+1;
 end
-    // Ende Punkte zeichnen
+    // Ende Punkte rechnen
 
 plot(x,y);
 plot(Mx, My, '+');
 
+// Anfang einzeichnen von P0 und Punend
+counter = 1;
+while counter <=360
+    if y(1,counter) >= -0.005 then
+        if y(1, counter) <= 0.005 then
+            y0 = y(1,counter);
+        end 
+    end
+    counter = counter +1;
+end
+// Ende einzeichnen von P0 und Punend
+    //Anfang P0
+P0 = ones(1,2);
+Punend = ones(1,2);
+counter = 1;
+while counter <= 360
+    if y(1, counter) <= 0.01 then
+        if y(1,counter) >= -0.01 then
+            P0(1,1) = x(1, counter);
+            P0(1,2) = y(1,counter);
+            break;
+        end
+    end
+    counter = counter +1;
+end
+plot(P0(1,1),P0(1,2), '+');
 // Hier endet das Zeichnen der Ortskurve
+Ik_komp = I(1,1) * cosd(phi(1,1)) + %i*I(1,1)*sind(phi(1,1));
+Rk = (real(Ik_komp))/U(1,1);
 
+Sk = I(1,1) * U(1,1);
+Qk = imag(Ik_komp) * U(1,1);
+Xs = Qk/(I(1,1)^2);
 
+Zk = Rk + %i*Xs;
 // Hier wird Zk berechnet 
-/*
-Pk = Uw(1,1)*Iw(1,1)*alpha(1,1)/skala(1,1); // Das ist die Scheinleistung was berechnet wird
-Rk = Pk/real(I_komp(1,1));
-Xs = (sqrt(U(1,1)*I(1,1)^2-Pk^2))/I(1,1)^2; // Passt noch nicht, weil es nicht sicher ist das der Erste messwert der Messwert im
- Kurzschlusspunkt ist
 
-Zk = Rk + %i *Xs; // Passt noch nicht so
-
-disp(Zk, "Zk=");*/
 // Hier endet das Berechnen von Zk
 
 /*
