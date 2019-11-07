@@ -1,8 +1,20 @@
+
+
+// Ganz wichtig !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// für die genauigkeit (macag numbers in den while schleifen) muss eine Bessere Lösung gefunden werden, je nach kreis größe ist sie unterschiedlich
+
+
+
+
+
+
+
 // Werte werden mittel Auswerteverhafren ausgeählt, wird sich also alles noch verändern
-I = [1; 2; 0.78; 10 ;4 ;2 ]; // In AmpereI = [0.22; 0.255; 0.289; 0.37; 0.5; 0.78];
-U = [ 189.8; 246.8; 304.1; 39; 80; 150]; // In Volt
-phi = [50; 60; 80; 63; 77; 54];
+I = [35; 0.909; 36.621; 10 ;4 ;2 ]; // In AmpereI = [0.22; 0.255; 0.289; 0.37; 0.5; 0.78];
+U = [380; 246.8; 304.1; 39; 80; 150]; // In Volt
+phi = [69.8; 3.2; 79.126; 63; 77; 54];
 // Ende Werte einlesen
+
 
 
 
@@ -57,7 +69,6 @@ while fehler == 1 // Achtung noch in der Schleife das nicht immer die gleichen W
         
         x = [30; 111; 13]; // Initial guess
         [x,v,info]=fsolve(x,F);// Nichtlineare Gleichung muss mit fsolve gelöst werden
-        disp(x);
         Mx = x(1,1); // Mittelpunkt X-Koordinate
         My = x(2,1); // Mittelpunkt Y-Koordinate
         r = x(3,1); // Radius
@@ -136,26 +147,19 @@ plot(Mx, My, '+');
 
 
 // Anfang einzeichnen von P0 und Punend
-counter = 1;
-while counter <=360
-    if y(1,counter) >= -0.005 then
-        if y(1, counter) <= 0.005 then
-            y0 = y(1,counter);
-        end 
-    end
-    counter = counter +1;
-end
 
     //Anfang P0
 P0 = ones(1,2);
 Punend = ones(1,2);
 counter = 1;
 while counter <= 360
-    if y(1, counter) <= 0.01 then
-        if y(1,counter) >= -0.01 then
-            P0(1,1) = x(1, counter);
-            P0(1,2) = y(1,counter);
-            break;
+    if y(1, counter) <= 0.2 then
+        if y(1,counter) >= -0.2 then
+            if x(1, counter) < Mx then // Diese Abfrage ist dafür da, das nur der ganz linke 0 Wert genommen wird
+                P0(1,1) = x(1, counter);
+                P0(1,2) = y(1,counter);
+                break
+            end;
         end
     end
     counter = counter +1;
@@ -173,9 +177,9 @@ plot(Pk(1,1), Pk(1,2), '+red')
 counterPk = 1;
 while counterPk <= 360
     if y(1, counterPk) >= Pk(1,2)-0.1 then
-        if y(1,counterPk) <= Pk(1,2)+0.01 then
+        if y(1,counterPk) <= Pk(1,2)+0.1 then
             if x(1, counterPk) >= Pk(1,1)-0.1 then
-                if x(1,counterPk) <= Pk(1,1)+0.01 then
+                if x(1,counterPk) <= Pk(1,1)+0.1 then
                     break;
                 end
             end
@@ -185,10 +189,13 @@ while counterPk <= 360
 end
 
 // Ausrechnen an wievlieter stellte die x achse und der Kreis schneiden (rechts)
+kreisstellen = size(x);
+
 counter = 1;
+counterAchse = 1;
 while counter <= 360
-    if y(1, counter) <= 0.01 then
-        if y(1,counter) >= -0.01 then
+    if y(1, counter) <= 0.2 then // Genauigkeit muss bei jedem mal umgestellt werden -> bessere Lösung
+        if y(1,counter) >= -0.2 then
             counterAchse = counter;
         end
     end
@@ -197,11 +204,11 @@ end
 
 AnzahlPunkteAbstand = 0;
 if Pk(1,2) < My then
-    AnzahlPunkteAbstand = counterPk-counterAchse;
+    AnzahlPunkteAbstand = kreisstellen(1,2) - (counterPk-counterAchse);
 end
 
 if Pk(1,2) >= My then
-    AnzahlPunkteAbstand = counterAchse-counterPk;
+    AnzahlPunkteAbstand = kreisstellen(1,2)- (counterAchse-counterPk);
 end
 
 stelle = counterAchse + (AnzahlPunkteAbstand/2); // noch eine Abfrage fals der Wert nicht ganzzahlig ist
@@ -209,7 +216,6 @@ if pmodulo(stelle ,2) > 0 then // mit Pmodulo schaut man wie viel rest bei der D
     stelle = stelle +0.5;
 end
 
-kreisstellen = size(x);
 if stelle > kreisstellen(1,2) then // Wenn P0 über dem Mittelpunkt ist
      stelle = stelle - kreisstellen(1,2);
 end
