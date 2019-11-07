@@ -1,19 +1,11 @@
-/*
-I = [10 ;4 ;2; 0.37; 0.5; 0.78]; // In AmpereI = [0.22; 0.255; 0.289; 0.37; 0.5; 0.78];
-U = [39; 80; 150; 189.8; 246.8; 304.1]; // In Volt
-phi = [63; 77; 54; 58.7; 80; 71.5];
-*/
-// Nur Betrag und Phase von Spannung und Strom
-// Werte einlesen:
 // Werte werden mittel Auswerteverhafren ausgeählt, wird sich also alles noch verändern
 I = [1; 2; 0.78; 10 ;4 ;2 ]; // In AmpereI = [0.22; 0.255; 0.289; 0.37; 0.5; 0.78];
 U = [ 189.8; 246.8; 304.1; 39; 80; 150]; // In Volt
 phi = [50; 60; 80; 63; 77; 54];
-/*Uw = [50; 100; 250]; // Spannungseinstellung des Wattmeters in Volt
-Iw = [25; 5; 5]; // Stromeinstellung des Wattmeters in Ampere
-alpha = [14; 14; 14]; // Zeigerausschlag des Wattmeters
-skala = [100; 100; 100]; // Skala auf der der Zeigerausschlag gemessen wurde*/
 // Ende Werte einlesen
+
+
+
 
 fehler = 1; // Von einem Fehler ausgehen, dass man in die While schleife kommt
 fehlercounter =1; // Wie oft neue Punkte genommen werden und die Ortskurve neu berechnet wird
@@ -28,6 +20,9 @@ I_komp = zeros(Punkte,1)
 while fehler == 1 // Achtung noch in der Schleife das nicht immer die gleichen Werte verwendet werden
     fehler = 0;
     while fehlercounter <= AnzahlPunkte/3
+
+
+
         // Hier wird die Ortskurve gezeichnet 
             //  Anfang Punkte für die Ortskurve ausrechnen
         BenoetigtePunkte = BenoetigtePunkte + Punkte;
@@ -50,6 +45,9 @@ while fehler == 1 // Achtung noch in der Schleife das nicht immer die gleichen W
             // Ende Punkte für die Ortskurve ausrechnen
             
             
+
+
+
             // Anfang Mittelpunkt und Radius ausrechnen
         function[f] = F(x)
             f(1) = (Px(1,1)-x(1))^2+(Py(1,1)-x(2))^2-x(3)^2 // x(1) entspricht m1, X(2) entsprciht m2 und x(3) entspricht dem Radius
@@ -70,6 +68,10 @@ while fehler == 1 // Achtung noch in der Schleife das nicht immer die gleichen W
         end
             // Ende Mittelpunkt und Radius ausrechnen
         
+
+
+
+
             // Anfang Ortskurve zeichnen
         x = 0;
         y = 0;
@@ -78,6 +80,10 @@ while fehler == 1 // Achtung noch in der Schleife das nicht immer die gleichen W
         y = My + r *sin(angle);
         
             // Ende Ortskurve zeichnen
+
+
+
+
         // Anfang Lage des Kreises Überprüfen
             // Schauen ob der Mittelpunkt im 1. Quadranten liegt
         if (Mx<0) then
@@ -88,6 +94,8 @@ while fehler == 1 // Achtung noch in der Schleife das nicht immer die gleichen W
             disp("Ortskurven Mittelpunkt liegt im Falschen Quadranten");
             fehler = 1;
         end
+
+
             // Schauen ob Kreis die y-Achse schneidet
         counter = 1;
         while counter <= 360
@@ -100,6 +108,7 @@ while fehler == 1 // Achtung noch in der Schleife das nicht immer die gleichen W
         end
         // Ende Lage des Kreises Überprüfen
 
+
         
         if fehler == 0 then 
             fehlercounter = 5;
@@ -107,16 +116,24 @@ while fehler == 1 // Achtung noch in der Schleife das nicht immer die gleichen W
         fehlercounter = fehlercounter +1
     end
 end
+
+
+
     // Anfang Punkte rechnen
 counter = 1;
 while counter <= Punkte
     plot(Px(counter,1), Py(counter,1),'+');
     counter = counter+1;
 end
-    // Ende Punkte rechnen
 
 plot(x,y);
 plot(Mx, My, '+');
+
+// Ende Punkte rechnen
+
+
+
+
 
 // Anfang einzeichnen von P0 und Punend
 counter = 1;
@@ -128,7 +145,7 @@ while counter <=360
     end
     counter = counter +1;
 end
-// Ende einzeichnen von P0 und Punend
+
     //Anfang P0
 P0 = ones(1,2);
 Punend = ones(1,2);
@@ -143,8 +160,71 @@ while counter <= 360
     end
     counter = counter +1;
 end
-plot(P0(1,1),P0(1,2), '+');
-// Hier endet das Zeichnen der Ortskurve
+plot(P0(1,1),P0(1,2), '+red');
+
+    // Punend
+// es sind x Anzahl an xWerten zwischen der x-Achse und dem Pk die Hälfte der Anzahl an Punkten was dazwischen liegen entspricht meinem Punend
+Ik_komp = I(1,1) * cosd(phi(1,1)) + %i*I(1,1)*sind(phi(1,1));
+Pk = ones(1,2);
+Pk(1,1) = imag(Ik_komp); // x wert
+Pk(1,2) = real(Ik_komp); // y-wert
+plot(Pk(1,1), Pk(1,2), '+red')
+
+counterPk = 1;
+while counterPk <= 360
+    if y(1, counterPk) >= Pk(1,2)-0.1 then
+        if y(1,counterPk) <= Pk(1,2)+0.01 then
+            if x(1, counterPk) >= Pk(1,1)-0.1 then
+                if x(1,counterPk) <= Pk(1,1)+0.01 then
+                    break;
+                end
+            end
+        end
+    end
+    counterPk = counterPk +1;
+end
+
+// Ausrechnen an wievlieter stellte die x achse und der Kreis schneiden (rechts)
+counter = 1;
+while counter <= 360
+    if y(1, counter) <= 0.01 then
+        if y(1,counter) >= -0.01 then
+            counterAchse = counter;
+        end
+    end
+    counter = counter +1;
+end
+
+AnzahlPunkteAbstand = 0;
+if Pk(1,2) < My then
+    AnzahlPunkteAbstand = counterPk-counterAchse;
+end
+
+if Pk(1,2) >= My then
+    AnzahlPunkteAbstand = counterAchse-counterPk;
+end
+
+stelle = counterAchse + (AnzahlPunkteAbstand/2); // noch eine Abfrage fals der Wert nicht ganzzahlig ist
+if pmodulo(stelle ,2) > 0 then // mit Pmodulo schaut man wie viel rest bei der Division bleibt
+    stelle = stelle +0.5;
+end
+
+kreisstellen = size(x);
+if stelle > kreisstellen(1,2) then // Wenn P0 über dem Mittelpunkt ist
+     stelle = stelle - kreisstellen(1,2);
+end
+
+Punend = ones(1,2);
+Punend(1,1) = x(1, stelle) // X wert
+Punend(1,2) = y(1, stelle) // Y-wert
+
+plot(Punend(1,1), Punend(1,2), '+red')
+// Ende einzeichnen von P0 und Punend
+
+
+
+
+// Hier wird Zk berechnet 
 Ik_komp = I(1,1) * cosd(phi(1,1)) + %i*I(1,1)*sind(phi(1,1));
 Rk = (real(Ik_komp))/U(1,1);
 
@@ -153,21 +233,4 @@ Qk = imag(Ik_komp) * U(1,1);
 Xs = Qk/(I(1,1)^2);
 
 Zk = Rk + %i*Xs;
-// Hier wird Zk berechnet 
-
 // Hier endet das Berechnen von Zk
-
-/*
-// Anfang: Prüfen ob ein Punkt auf dem Kreis liegt
-counter = 1;
-while   counter < 360 // Passt noch nicht weil der Punkt (px) Variabl sein muss, sowie auch deie Abweichung (0,5)
-    if Px(1,1) <= x(1,counter)+0.05 then
-        if Px(1,1) >= x(1,counter)-0.05 then
-            disp("Juhu");
-            test = 3;
-        end
-    end
-    counter = counter + 1;
-end
-// Ende: Prüfen ob ein Punkt auf dem Kreis liegt
-*/
