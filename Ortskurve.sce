@@ -19,6 +19,7 @@ phi = [69.8; 3.2; 79.126; 63; 77; 54];
 
 
 
+
 fehler = 1; // Von einem Fehler ausgehen, dass man in die While schleife kommt
 fehlercounter =1; // Wie oft neue Punkte genommen werden und die Ortskurve neu berechnet wird
 
@@ -143,6 +144,16 @@ plot(Mx, My, '+');
 // Ende Punkte rechnen
 
 
+disp(imag(Ik_komp));
+
+
+// Anfang Genaugikeit 
+
+genauigkeitX = x(1,90) - x(1,91); // Bei 90, 91 ist der gröste abstand bei den X-werten
+genauigkeitY = y(1,2) - y(1,1); // Bei 1, 2 ist der größte Abstand bei den Y-werten
+
+// Ende Genauigkeit
+
 
 
 
@@ -153,8 +164,8 @@ P0 = ones(1,2);
 Punend = ones(1,2);
 counter = 1;
 while counter <= 360
-    if y(1, counter) <= 0.2 then
-        if y(1,counter) >= -0.2 then
+    if y(1, counter) <= genauigkeitY then
+        if y(1,counter) >= -genauigkeitY then
             if x(1, counter) < Mx then // Diese Abfrage ist dafür da, das nur der ganz linke 0 Wert genommen wird
                 P0(1,1) = x(1, counter);
                 P0(1,2) = y(1,counter);
@@ -176,10 +187,10 @@ plot(Pk(1,1), Pk(1,2), '+red')
 
 counterPk = 1;
 while counterPk <= 360
-    if y(1, counterPk) >= Pk(1,2)-0.1 then
-        if y(1,counterPk) <= Pk(1,2)+0.1 then
-            if x(1, counterPk) >= Pk(1,1)-0.1 then
-                if x(1,counterPk) <= Pk(1,1)+0.1 then
+    if y(1, counterPk) >= Pk(1,2) - genauigkeitY then
+        if y(1,counterPk) <= Pk(1,2) + genauigkeitY then
+            if x(1, counterPk) >= Pk(1,1) - genauigkeitX then
+                if x(1,counterPk) <= Pk(1,1) + genauigkeitX then
                     break;
                 end
             end
@@ -194,8 +205,8 @@ kreisstellen = size(x);
 counter = 1;
 counterAchse = 1;
 while counter <= 360
-    if y(1, counter) <= 0.2 then // Genauigkeit muss bei jedem mal umgestellt werden -> bessere Lösung
-        if y(1,counter) >= -0.2 then
+    if y(1, counter) <= genauigkeitY then // Genauigkeit muss bei jedem mal umgestellt werden -> bessere Lösung
+        if y(1,counter) >= -genauigkeitY then
             counterAchse = counter;
         end
     end
