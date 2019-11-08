@@ -170,10 +170,10 @@ plot(Punkt_0(1,1),Punkt_0(1,2), '+red');
 
     // Punend
 // es sind x Anzahl an xWerten zwischen der x-Achse und dem Pk die Hälfte der Anzahl an Punkten was dazwischen liegen entspricht meinem Punend
-Ik_komp = I(1,1) * cosd(phi(1,1)) + %i*I(1,1)*sind(phi(1,1));
+Ik = I(1,1) * cosd(phi(1,1)) + %i*I(1,1)*sind(phi(1,1));
 Punkt_k = ones(1,2);
-Punkt_k(1,1) = imag(Ik_komp); // x wert
-Punkt_k(1,2) = real(Ik_komp); // y-wert
+Punkt_k(1,1) = imag(Ik); // x wert
+Punkt_k(1,2) = real(Ik); // y-wert
 plot(Punkt_k(1,1), Punkt_k(1,2), '+red')
 
 counterPk = 1;
@@ -233,12 +233,11 @@ plot(Punkt_unend(1,1), Punkt_unend(1,2), '+red')
 
 
 // Hier wird Zk berechnet 
-Ik_komp = I(1,1) * cosd(phi(1,1)) + %i*I(1,1)*sind(phi(1,1));
-Rk = (real(Ik_komp))/U(1,1);
+Ik = I(1,1) * cosd(phi(1,1)) + %i*I(1,1)*sind(phi(1,1));
+Uk = U(1,1);
 
-Sk = I(1,1) * U(1,1);
-Qk = imag(Ik_komp) * U(1,1);
-Xs = Qk/(I(1,1)^2);
+Rk = Uk/real(Ik);
+Xs = Uk/imag(Ik);
 
 Zk = Rk + %i*Xs;
 // Hier endet das Berechnen von Zk
@@ -246,15 +245,13 @@ Zk = Rk + %i*Xs;
 
 
 // Anfang ersatzschaltbild
-
-// Rk und Xs sind bei Zk ausgerechnet worden
-
     // Rfe
     // Annahme: Der letzte wert der Spannung ist U0
 U0 = U(AnzahlPunkte, 1);
 I0 = Punkt_0(1,1) + %i*Punkt_0(1,2);
-Q0 = U0*imag(I0);
-P0 = U0 * real(I0);
+
+Rfe = U0/real(I0);
+Xh = U0/imag(I0);   // Rk und Xs sind bei Zk ausgerechnet worden
 // Ende Ersatzschaltbild
 
 
@@ -267,6 +264,7 @@ x_LeistungsLinie = [Punkt_0(1,1), Punkt_unend(1,1)];
 y_LeistungsLinie = [Punkt_0(1,2), Punkt_unend(1,2)];
 
 
-plot(x_MomentLinie , y_MomentLinie );
-plot(x_LeistungsLinie, y_LeistungsLinie);
+plot(x_MomentLinie , y_MomentLinie, 'g');
+plot(x_LeistungsLinie, y_LeistungsLinie, 'b');
 // Ende Momenten und Leistungskennlinie
+
