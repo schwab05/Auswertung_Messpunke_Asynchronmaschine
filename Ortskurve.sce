@@ -1,13 +1,6 @@
+// P0 wird ganz zum schluss anderes berechnet also ist der RFE berechenbar
 
-
-// Ganz wichtig !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// für die genauigkeit (macag numbers in den while schleifen) muss eine Bessere Lösung gefunden werden, je nach kreis größe ist sie unterschiedlich
-
-
-
-
-
-
+// Punkte P0 und Pk als PunktK und Punkt0 anschreiben
 
 // Werte werden mittel Auswerteverhafren ausgeählt, wird sich also alles noch verändern
 I = [35; 0.909; 36.621; 10 ;4 ;2 ]; // In AmpereI = [0.22; 0.255; 0.289; 0.37; 0.5; 0.78];
@@ -144,7 +137,6 @@ plot(Mx, My, '+');
 // Ende Punkte rechnen
 
 
-disp(imag(Ik_komp));
 
 
 // Anfang Genaugikeit 
@@ -251,3 +243,26 @@ Xs = Qk/(I(1,1)^2);
 
 Zk = Rk + %i*Xs;
 // Hier endet das Berechnen von Zk
+
+
+
+// Anfang ersatzschaltbild
+
+// Rk und Xs sind bei Zk ausgerechnet worden
+
+    // Rfe
+    // Annahme: Der letzte wert der Spannung ist U0
+U0 = U(AnzahlPunkte, 1);
+I0 = P0(1,1) + %i*P0(1,2);
+Q0 = U0*imag(I0);
+P0 = U0 * real(I0);
+// Ende Ersatzschaltbild
+
+
+
+// Momenten und Leistungskennlinie
+x1 = [P0(1,1), Pk(1,1)];  // Neue Variablen namen auswählen
+y1 = [P0(1,2), Pk(1,2)];
+
+plot(x1, y1);
+// Ende Momenten und Leistungskennlinie
