@@ -1,6 +1,5 @@
 // P0 wird ganz zum schluss anderes berechnet also ist der RFE berechenbar
 
-// Punkte P0 und Pk als PunktK und Punkt0 anschreiben
 
 // Werte werden mittel Auswerteverhafren ausgeählt, wird sich also alles noch verändern
 I = [35; 0.909; 36.621; 10 ;4 ;2 ]; // In AmpereI = [0.22; 0.255; 0.289; 0.37; 0.5; 0.78];
@@ -152,37 +151,37 @@ genauigkeitY = y(1,2) - y(1,1); // Bei 1, 2 ist der größte Abstand bei den Y-w
 // Anfang einzeichnen von P0 und Punend
 
     //Anfang P0
-P0 = ones(1,2);
-Punend = ones(1,2);
+Punkt_0 = ones(1,2);
+Punkt_unend = ones(1,2);
 counter = 1;
 while counter <= 360
     if y(1, counter) <= genauigkeitY then
         if y(1,counter) >= -genauigkeitY then
             if x(1, counter) < Mx then // Diese Abfrage ist dafür da, das nur der ganz linke 0 Wert genommen wird
-                P0(1,1) = x(1, counter);
-                P0(1,2) = y(1,counter);
+                Punkt_0(1,1) = x(1, counter);
+                Punkt_0(1,2) = y(1,counter);
                 break
             end;
         end
     end
     counter = counter +1;
 end
-plot(P0(1,1),P0(1,2), '+red');
+plot(Punkt_0(1,1),Punkt_0(1,2), '+red');
 
     // Punend
 // es sind x Anzahl an xWerten zwischen der x-Achse und dem Pk die Hälfte der Anzahl an Punkten was dazwischen liegen entspricht meinem Punend
 Ik_komp = I(1,1) * cosd(phi(1,1)) + %i*I(1,1)*sind(phi(1,1));
-Pk = ones(1,2);
-Pk(1,1) = imag(Ik_komp); // x wert
-Pk(1,2) = real(Ik_komp); // y-wert
-plot(Pk(1,1), Pk(1,2), '+red')
+Punkt_k = ones(1,2);
+Punkt_k(1,1) = imag(Ik_komp); // x wert
+Punkt_k(1,2) = real(Ik_komp); // y-wert
+plot(Punkt_k(1,1), Punkt_k(1,2), '+red')
 
 counterPk = 1;
 while counterPk <= 360
-    if y(1, counterPk) >= Pk(1,2) - genauigkeitY then
-        if y(1,counterPk) <= Pk(1,2) + genauigkeitY then
-            if x(1, counterPk) >= Pk(1,1) - genauigkeitX then
-                if x(1,counterPk) <= Pk(1,1) + genauigkeitX then
+    if y(1, counterPk) >= Punkt_k(1,2) - genauigkeitY then
+        if y(1,counterPk) <= Punkt_k(1,2) + genauigkeitY then
+            if x(1, counterPk) >= Punkt_k(1,1) - genauigkeitX then
+                if x(1,counterPk) <= Punkt_k(1,1) + genauigkeitX then
                     break;
                 end
             end
@@ -206,11 +205,11 @@ while counter <= 360
 end
 
 AnzahlPunkteAbstand = 0;
-if Pk(1,2) < My then
+if Punkt_k(1,2) < My then
     AnzahlPunkteAbstand = kreisstellen(1,2) - (counterPk-counterAchse);
 end
 
-if Pk(1,2) >= My then
+if Punkt_k(1,2) >= My then
     AnzahlPunkteAbstand = kreisstellen(1,2)- (counterAchse-counterPk);
 end
 
@@ -223,11 +222,11 @@ if stelle > kreisstellen(1,2) then // Wenn P0 über dem Mittelpunkt ist
      stelle = stelle - kreisstellen(1,2);
 end
 
-Punend = ones(1,2);
-Punend(1,1) = x(1, stelle) // X wert
-Punend(1,2) = y(1, stelle) // Y-wert
+Punkt_unend = ones(1,2);
+Punkt_unend(1,1) = x(1, stelle) // X wert
+Punkt_unend(1,2) = y(1, stelle) // Y-wert
 
-plot(Punend(1,1), Punend(1,2), '+red')
+plot(Punkt_unend(1,1), Punkt_unend(1,2), '+red')
 // Ende einzeichnen von P0 und Punend
 
 
@@ -253,7 +252,7 @@ Zk = Rk + %i*Xs;
     // Rfe
     // Annahme: Der letzte wert der Spannung ist U0
 U0 = U(AnzahlPunkte, 1);
-I0 = P0(1,1) + %i*P0(1,2);
+I0 = Punkt_0(1,1) + %i*Punkt_0(1,2);
 Q0 = U0*imag(I0);
 P0 = U0 * real(I0);
 // Ende Ersatzschaltbild
@@ -261,8 +260,13 @@ P0 = U0 * real(I0);
 
 
 // Momenten und Leistungskennlinie
-x1 = [P0(1,1), Pk(1,1)];  // Neue Variablen namen auswählen
-y1 = [P0(1,2), Pk(1,2)];
+x_MomentLinie = [Punkt_0(1,1), Punkt_k(1,1)];  
+y_MomentLinie = [Punkt_0(1,2), Punkt_k(1,2)];
 
-plot(x1, y1);
+x_LeistungsLinie = [Punkt_0(1,1), Punkt_unend(1,1)];
+y_LeistungsLinie = [Punkt_0(1,2), Punkt_unend(1,2)];
+
+
+plot(x_MomentLinie , y_MomentLinie );
+plot(x_LeistungsLinie, y_LeistungsLinie);
 // Ende Momenten und Leistungskennlinie
