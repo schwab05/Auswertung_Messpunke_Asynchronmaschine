@@ -256,15 +256,22 @@ Xh = U0/imag(I0);   // Rk und Xs sind bei Zk ausgerechnet worden
 
 
 
-// Momenten und Leistungskennlinie
-x_MomentLinie = [Punkt_0(1,1), Punkt_k(1,1)];  
-y_MomentLinie = [Punkt_0(1,2), Punkt_k(1,2)];
+// Momenten und Leistungskennlinie mit Geradengleichung
+x_MomentLinie = [Punkt_0(1,1), Punkt_unend(1,1)];  
+y_MomentLinie = [Punkt_0(1,2), Punkt_unend(1,2)];
 
-x_LeistungsLinie = [Punkt_0(1,1), Punkt_unend(1,1)];
-y_LeistungsLinie = [Punkt_0(1,2), Punkt_unend(1,2)];
+k_M = (y_MomentLinie(1,2)-y_MomentLinie(1,1))/(x_MomentLinie(1,2)-x_MomentLinie(1,1));
+d_M = y_MomentLinie(1,1) - k_M * x_MomentLinie(1,1);
 
 
-plot(x_MomentLinie , y_MomentLinie, 'g');
-plot(x_LeistungsLinie, y_LeistungsLinie, 'b');
-// Ende Momenten und Leistungskennlinie
+x_LeistungsLinie = [Punkt_0(1,1), Punkt_k(1,1)];
+y_LeistungsLinie = [Punkt_0(1,2), Punkt_k(1,2)];
+
+k_L = (y_LeistungsLinie(1,2)-y_LeistungsLinie(1,1))/(x_LeistungsLinie(1,2)-x_LeistungsLinie(1,1));
+d_L = y_LeistungsLinie(1,1) - k_L * x_LeistungsLinie(1,1);
+
+
+plot(x_MomentLinie , y_MomentLinie, 'b');
+plot(x_LeistungsLinie, y_LeistungsLinie, 'g');
+// Ende Momenten und Leistungskennlinie mit Geradengleichung
 
