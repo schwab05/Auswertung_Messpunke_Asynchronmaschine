@@ -1,6 +1,10 @@
 // P0 wird ganz zum schluss anderes berechnet also ist der RFE berechenbar
 
 
+// Kreis muss die X_achse schneiden !!!!
+
+// Punkte am Kreis nicht mit der While schleife berechnen sondern mit der Kreisgleichung !!
+
 // Werte werden mittel Auswerteverhafren ausgeählt, wird sich also alles noch verändern
 I = [35; 0.909; 36.621; 10 ;4 ;2 ]; // In AmpereI = [0.22; 0.255; 0.289; 0.37; 0.5; 0.78];
 U = [380; 246.8; 304.1; 39; 80; 150]; // In Volt
@@ -9,6 +13,13 @@ phi = [69.8; 3.2; 79.126; 63; 77; 54];
 
 
 
+
+// Eingabe von Strangzahl und Leerlaufdrehzahl benötigt, eventuell auch Strangspannung
+
+
+// Anfang Verschiedene Zeichenfenster
+schlupfgerade = 1;
+// Ende Verschieden Zeichenfenster
 
 
 
@@ -20,7 +31,8 @@ BenoetigtePunkte = 0; // drei, Weil wir drei Werte zum ausrechnen des Kreises be
 WerteCounter = 1;
 AnzahlPunkte = size(I);
 AnzahlPunkte = AnzahlPunkte(1,1);
-I_komp = zeros(Punkte,1)
+I_komp = zeros(Punkte,1);
+Kreis_Punkte = 360;
 
 while fehler == 1 // Achtung noch in der Schleife das nicht immer die gleichen Werte verwendet werden
     fehler = 0;
@@ -77,11 +89,11 @@ while fehler == 1 // Achtung noch in der Schleife das nicht immer die gleichen W
 
 
             // Anfang Ortskurve zeichnen
-        x = 0;
-        y = 0;
-        angle = linspace(0, 2*%pi, 360); // die Punkte x und y des Kreises defineren (360 Stück)
-        x = Mx + r *cos(angle);
-        y = My + r *sin(angle);
+        x_Kreis = 0;
+        y_Kreis = 0;
+        angle = linspace(0, 2*%pi, Kreis_Punkte); // die Punkte x und y des Kreises defineren (360 Stück)
+        x_Kreis = Mx + r *cos(angle);
+        y_Kreis = My + r *sin(angle);
         
             // Ende Ortskurve zeichnen
 
@@ -102,8 +114,8 @@ while fehler == 1 // Achtung noch in der Schleife das nicht immer die gleichen W
 
             // Schauen ob Kreis die y-Achse schneidet
         counter = 1;
-        while counter <= 360
-            if x(1, counter) <= 0 then
+        while counter <= Kreis_Punkte
+            if x_Kreis(1, counter) <= 0 then
                 disp("Ortskurve liegt im 2.Quadranten, Falsch");
                 fehler = 1;
                 break;
@@ -111,8 +123,7 @@ while fehler == 1 // Achtung noch in der Schleife das nicht immer die gleichen W
             counter = counter +1;
         end
         // Ende Lage des Kreises Überprüfen
-
-
+        
         
         if fehler == 0 then 
             fehlercounter = 5;
@@ -129,10 +140,8 @@ while counter <= Punkte
     plot(Px(counter,1), Py(counter,1),'+');
     counter = counter+1;
 end
-
-plot(x,y);
+plot(x_Kreis,y_Kreis);
 plot(Mx, My, '+');
-
 // Ende Punkte rechnen
 
 
@@ -140,8 +149,8 @@ plot(Mx, My, '+');
 
 // Anfang Genaugikeit 
 
-genauigkeitX = x(1,90) - x(1,91); // Bei 90, 91 ist der gröste abstand bei den X-werten
-genauigkeitY = y(1,2) - y(1,1); // Bei 1, 2 ist der größte Abstand bei den Y-werten
+genauigkeitX = x_Kreis(1,90) - x_Kreis(1,91); // Bei 90, 91 ist der gröste abstand bei den X-werten
+genauigkeitY = y_Kreis(1,2) - y_Kreis(1,1); // Bei 1, 2 ist der größte Abstand bei den Y-werten
 
 // Ende Genauigkeit
 
@@ -154,12 +163,15 @@ genauigkeitY = y(1,2) - y(1,1); // Bei 1, 2 ist der größte Abstand bei den Y-w
 Punkt_0 = ones(1,2);
 Punkt_unend = ones(1,2);
 counter = 1;
-while counter <= 360
-    if y(1, counter) <= genauigkeitY then
-        if y(1,counter) >= -genauigkeitY then
-            if x(1, counter) < Mx then // Diese Abfrage ist dafür da, das nur der ganz linke 0 Wert genommen wird
-                Punkt_0(1,1) = x(1, counter);
-                Punkt_0(1,2) = y(1,counter);
+stelle_P0 = 0;
+
+while counter <= Kreis_Punkte
+    if y_Kreis(1, counter) <= genauigkeitY then
+        if y_Kreis(1,counter) >= -genauigkeitY then
+            if x_Kreis(1, counter) < Mx then // Diese Abfrage ist dafür da, das nur der ganz linke 0 Wert genommen wird
+                stelle_P0 = counter;
+                Punkt_0(1,1) = x_Kreis(1, stelle_P0);
+                Punkt_0(1,2) = y_Kreis(1,stelle_P0);
                 break
             end;
         end
@@ -168,20 +180,25 @@ while counter <= 360
 end
 plot(Punkt_0(1,1),Punkt_0(1,2), '+red');
 
-    // Punend
-// es sind x Anzahl an xWerten zwischen der x-Achse und dem Pk die Hälfte der Anzahl an Punkten was dazwischen liegen entspricht meinem Punend
+
+// Kruzschlusspunkt
+
 Ik = I(1,1) * cosd(phi(1,1)) + %i*I(1,1)*sind(phi(1,1));
 Punkt_k = ones(1,2);
 Punkt_k(1,1) = imag(Ik); // x wert
 Punkt_k(1,2) = real(Ik); // y-wert
-plot(Punkt_k(1,1), Punkt_k(1,2), '+red')
+plot(Punkt_k(1,1), Punkt_k(1,2), '+red');
+
+    // Punend
+// es sind x Anzahl an xWerten zwischen der x-Achse und dem Pk die Hälfte der Anzahl an Punkten was dazwischen liegen entspricht meinem Punend
 
 counterPk = 1;
-while counterPk <= 360
-    if y(1, counterPk) >= Punkt_k(1,2) - genauigkeitY then
-        if y(1,counterPk) <= Punkt_k(1,2) + genauigkeitY then
-            if x(1, counterPk) >= Punkt_k(1,1) - genauigkeitX then
-                if x(1,counterPk) <= Punkt_k(1,1) + genauigkeitX then
+while counterPk <= Kreis_Punkte
+    if y_Kreis(1, counterPk) >= Punkt_k(1,2) - genauigkeitY then
+        if y_Kreis(1,counterPk) <= Punkt_k(1,2) + genauigkeitY then
+            if x_Kreis(1, counterPk) >= Punkt_k(1,1) - genauigkeitX then
+                if x_Kreis(1,counterPk) <= Punkt_k(1,1) + genauigkeitX then
+                    stelle_Pk = counterPk;
                     break;
                 end
             end
@@ -191,14 +208,13 @@ while counterPk <= 360
 end
 
 // Ausrechnen an wievlieter stellte die x achse und der Kreis schneiden (rechts)
-kreisstellen = size(x);
 
 counter = 1;
-counterAchse = 1;
-while counter <= 360
-    if y(1, counter) <= genauigkeitY then // Genauigkeit muss bei jedem mal umgestellt werden -> bessere Lösung
-        if y(1,counter) >= -genauigkeitY then
-            counterAchse = counter;
+stelle_XAchse_rechts = 1;
+while counter <= Kreis_Punkte
+    if y_Kreis(1, counter) <= genauigkeitY then 
+        if y_Kreis(1,counter) >= -genauigkeitY then
+            stelle_XAchse_rechts = counter;
         end
     end
     counter = counter +1;
@@ -206,27 +222,27 @@ end
 
 AnzahlPunkteAbstand = 0;
 if Punkt_k(1,2) < My then
-    AnzahlPunkteAbstand = kreisstellen(1,2) - (counterPk-counterAchse);
+    AnzahlPunkteAbstand = Kreis_Punkte - (stelle_Pk-stelle_XAchse_rechts);
 end
 
 if Punkt_k(1,2) >= My then
-    AnzahlPunkteAbstand = kreisstellen(1,2)- (counterAchse-counterPk);
+    AnzahlPunkteAbstand = Kreis_Punkte- (stelle_XAchse_rechts-stelle_Pk);
 end
 
-stelle = counterAchse + (AnzahlPunkteAbstand/2); // noch eine Abfrage fals der Wert nicht ganzzahlig ist
-if pmodulo(stelle ,2) > 0 then // mit Pmodulo schaut man wie viel rest bei der Division bleibt
-    stelle = stelle +0.5;
+stelle_Punend = stelle_XAchse_rechts + (AnzahlPunkteAbstand/2); // noch eine Abfrage fals der Wert nicht ganzzahlig ist
+if pmodulo(stelle_Punend ,2) > 0 then // mit Pmodulo schaut man wie viel rest bei der Division bleibt
+    stelle_Punend = stelle_Punend +0.5;
 end
 
-if stelle > kreisstellen(1,2) then // Wenn P0 über dem Mittelpunkt ist
-     stelle = stelle - kreisstellen(1,2);
+if stelle_Punend > Kreis_Punkte then // Wenn P0 über dem Mittelpunkt ist
+     stelle_Punend = stelle_Punend - Kreis_Punkte;
 end
 
 Punkt_unend = ones(1,2);
-Punkt_unend(1,1) = x(1, stelle) // X wert
-Punkt_unend(1,2) = y(1, stelle) // Y-wert
+Punkt_unend(1,1) = x_Kreis(1, stelle_Punend) // X wert
+Punkt_unend(1,2) = y_Kreis(1, stelle_Punend) // Y-wert
 
-plot(Punkt_unend(1,1), Punkt_unend(1,2), '+red')
+plot(Punkt_unend(1,1), Punkt_unend(1,2), '+red');
 // Ende einzeichnen von P0 und Punend
 
 
@@ -260,18 +276,146 @@ Xh = U0/imag(I0);   // Rk und Xs sind bei Zk ausgerechnet worden
 x_MomentLinie = [Punkt_0(1,1), Punkt_unend(1,1)];  
 y_MomentLinie = [Punkt_0(1,2), Punkt_unend(1,2)];
 
-k_M = (y_MomentLinie(1,2)-y_MomentLinie(1,1))/(x_MomentLinie(1,2)-x_MomentLinie(1,1));
-d_M = y_MomentLinie(1,1) - k_M * x_MomentLinie(1,1);
+k_ML = (y_MomentLinie(1,2)-y_MomentLinie(1,1))/(x_MomentLinie(1,2)-x_MomentLinie(1,1));
+d_ML = y_MomentLinie(1,1) - k_ML * x_MomentLinie(1,1);
 
+plot(x_MomentLinie , y_MomentLinie, 'b');
 
 x_LeistungsLinie = [Punkt_0(1,1), Punkt_k(1,1)];
 y_LeistungsLinie = [Punkt_0(1,2), Punkt_k(1,2)];
 
-k_L = (y_LeistungsLinie(1,2)-y_LeistungsLinie(1,1))/(x_LeistungsLinie(1,2)-x_LeistungsLinie(1,1));
-d_L = y_LeistungsLinie(1,1) - k_L * x_LeistungsLinie(1,1);
+k_LL = (y_LeistungsLinie(1,2)-y_LeistungsLinie(1,1))/(x_LeistungsLinie(1,2)-x_LeistungsLinie(1,1));
+d_LL = y_LeistungsLinie(1,1) - k_LL * x_LeistungsLinie(1,1);
 
-
-plot(x_MomentLinie , y_MomentLinie, 'b');
 plot(x_LeistungsLinie, y_LeistungsLinie, 'g');
 // Ende Momenten und Leistungskennlinie mit Geradengleichung
 
+
+
+
+// Anfang Abstand von Mk ausrechnen
+counterMk = stelle_Punend;
+x_ML = 0;
+y_ML = 0;
+x_Mk = 0;
+y_Mk = 0;
+stelle_Mk = 0;
+Abstand_Mk_Neu = 0; // wird in cm ( oder welcher abstand da auch herscht) ausgerechnet, deswegen Abstand
+Abstand_Mk = 0;
+
+while counterMk <= stelle_P0
+    x_ML = x_Kreis(1, counterMk);
+    y_ML = k_ML * x_ML + d_ML;
+    
+    Abstand_Mk_Neu = y_Kreis(1, counterMk) - y_ML;
+    
+    if Abstand_Mk_Neu > Abstand_Mk then
+        Abstand_Mk = Abstand_Mk_Neu;
+        x_Mk = x_ML;
+        y_Mk = y_ML;
+        stelle_Mk = counterMk;
+    end
+    
+    counterMk = counterMk + 1;
+end
+
+Punkt_Mk = [x_Kreis(1, stelle_Mk), y_Kreis(1, stelle_Mk)]
+
+x_Mk = [x_Mk, Punkt_Mk(1,1)];
+y_Mk = [y_Mk, Punkt_Mk(1,2)];
+
+plot(Punkt_Mk(1,1), Punkt_Mk(1,2), '+black');
+plot(x_Mk, y_Mk);
+// Ende Abstand von Mk ausrechnen
+
+
+
+// Anfang AnlaufMoment
+stelle_MA = stelle_Pk;
+
+x_MA = x_Kreis(1, stelle_MA);
+y_MA = k_ML * x_MA + d_ML;
+
+Abstand_ML = y_Kreis(1, stelle_Pk) - y_ML
+
+x_MA = [x_MA, x_Kreis(1, stelle_MA)];
+y_MA = [y_MA, y_Kreis(1, stelle_MA)];
+
+plot(x_MA, y_MA);
+// Ende AnlaufMoment
+
+
+
+
+
+
+
+// GANZ WICHTIG 
+// AB HIER DARF NUR MEHR IN DEM SCHLUPGERADENFENSTERGEZEICHNET WERDEN!!!!!!!!!!!
+
+
+
+// Anfang Ortskurve in neuem Fenster Zeichnen
+show_window(schlupfgerade);
+plot(x_Kreis, y_Kreis),
+plot(Mx, My, '+');
+counter = 1;
+while counter <= Punkte
+    plot(Px(counter,1), Py(counter,1),'+');
+    counter = counter+1;
+end
+plot(Punkt_0(1, 1), Punkt_0(1, 2), '+red');
+plot(Punkt_unend(1, 1), Punkt_unend(1, 2), '+red');
+plot(Punkt_k(1, 1), Punkt_k(1, 2), '+red');
+// Ende Ortskurve in neuem Fenster Zeichnen
+
+
+
+
+// Anfang Schlupfgerade zeichnen
+
+// Anfang Punkt B bestimmen
+stelle_PunktB = stelle_XAchse_rechts - stelle_Punend;
+Punkt_B = [x_Kreis(1, stelle_PunktB), y_Kreis(1, stelle_PunktB)];
+plot(Punkt_B(1,1), Punkt_B(1,2), '+green')
+// Ende Punkt B bestimmen
+
+// Hilfslinien für die Konstruktin der Schlupfgerade:
+x_Linie_Pb_Punend = [Punkt_B(1, 1), Punkt_unend(1, 1)];
+y_Linie_Pb_Punend = [Punkt_B(1, 2), Punkt_unend(1, 2)];
+
+k_Linie_Pb_Punend = (y_Linie_Pb_Punend(1,2)-y_Linie_Pb_Punend(1,1))/(x_Linie_Pb_Punend(1,2)-x_Linie_Pb_Punend(1,1));
+d_Linie_Pb_Punend = y_Linie_Pb_Punend(1,1) - k_Linie_Pb_Punend * x_Linie_Pb_Punend(1,1);
+
+
+x_Linie_Pb_Pk = [Punkt_B(1, 1), Punkt_k(1, 1)];
+y_Linie_Pb_Pk = [Punkt_B(1, 2), Punkt_k(1, 2)];
+
+k_Linie_Pb_Pk = (y_Linie_Pb_Pk(1,2)-y_Linie_Pb_Pk(1,1))/(x_Linie_Pb_Pk(1,2)-x_Linie_Pb_Pk(1,1));
+d_Linie_Pb_Pk = y_Linie_Pb_Pk(1,1) - k_Linie_Pb_Pk * x_Linie_Pb_Pk(1,1);
+
+
+x_Linie_Pb_P0 = [Punkt_B(1, 1), Punkt_0(1, 1)];
+y_Linie_Pb_P0 = [Punkt_B(1, 2), Punkt_0(1, 2)];
+
+k_Linie_Pb_P0 = (y_Linie_Pb_P0(1,2)-y_Linie_Pb_P0(1,1))/(x_Linie_Pb_P0(1,2)-x_Linie_Pb_P0(1,1));
+d_Linie_Pb_P0 = y_Linie_Pb_P0(1,1) - k_Linie_Pb_P0 * x_Linie_Pb_P0(1,1);
+
+
+
+// Schlupfgerade
+x_Schlupfgerade(1, 1) = Punkt_k(1, 1);
+y_Schlupfgerade(1, 1) = Punkt_k(1, 2);
+k_Schlupfgerade = k_Linie_Pb_Punend;
+
+d_Schlupfgerade = y_Schlupfgerade(1, 1) - k_Schlupfgerade * x_Schlupfgerade(1, 1);
+
+x_Schlupfgerade(1, 2) = (d_Linie_Pb_P0- d_Schlupfgerade)/(k_Schlupfgerade - k_Linie_Pb_P0);
+y_Schlupfgerade(1, 2) = k_Schlupfgerade * x_Schlupfgerade(1, 2) + d_Schlupfgerade;
+
+plot(x_Linie_Pb_Punend, y_Linie_Pb_Punend);
+plot(x_Linie_Pb_Pk, y_Linie_Pb_Pk);
+plot(x_Linie_Pb_P0, y_Linie_Pb_P0);
+plot(x_Schlupfgerade, y_Schlupfgerade, 'c')
+xgrid();
+// Ende Schlupfgerade zeichen
