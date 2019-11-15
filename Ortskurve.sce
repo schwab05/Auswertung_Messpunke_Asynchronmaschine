@@ -22,6 +22,7 @@ U1str = 380/sqrt(3);
 // Anfang Verschiedene Zeichenfenster
 schlupfgerade = 1;
 kennlinien = 2;
+xgrid(1);
 // Ende Verschieden Zeichenfenster
 
 
@@ -362,7 +363,7 @@ stelle_MA = stelle_Pk;
 x_MA = x_Kreis(1, stelle_MA);
 y_MA = k_ML * x_MA + d_ML;
 
-Abstand_MA = y_Kreis(1, stelle_Pk) - y_ML
+Abstand_MA = y_Kreis(1, stelle_MA) - y_MA
 
 x_MA = [x_MA, x_Kreis(1, stelle_MA)];
 y_MA = [y_MA, y_Kreis(1, stelle_MA)];
@@ -477,16 +478,10 @@ while counterM <= (stelle_P0 - stelle_Pk)
     x_ML = x_Kreis(1, (counterM+stelle_Pk));
     y_ML = k_ML * x_ML + d_ML;
     
+    Abstand_M(1, counterM+1) = y_Kreis(1, (counterM+stelle_Pk)) - y_ML // Ohne counter +1 wäre der Matrix Index null, erhöht man den counter vorher
     
     counterM = counterM + 1;
-    
-    Abstand_M(1, counterM) = y_Kreis(1, (counterM+stelle_Pk)) - y_ML
     M(1, counterM) = mM * Abstand_M(1, counterM)
-    
-    if M(1, counterM) < 0 then
-        M(1, counterM) = 0;
-    end
-    
 end
 // ENDe Moment
 
