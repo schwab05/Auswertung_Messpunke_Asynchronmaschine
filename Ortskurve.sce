@@ -471,8 +471,9 @@ counterM = 0;
 x_ML = 0;
 y_ML = 0;
 Abstand_M = zeros(1, stelle_P0 - stelle_Pk);
+M = zeros(1, stelle_P0 - stelle_Pk);
 
-while counterM < (stelle_P0 - stelle_Pk)
+while counterM <= (stelle_P0 - stelle_Pk)
     x_ML = x_Kreis(1, (counterM+stelle_Pk));
     y_ML = k_ML * x_ML + d_ML;
     
@@ -480,7 +481,11 @@ while counterM < (stelle_P0 - stelle_Pk)
     counterM = counterM + 1;
     
     Abstand_M(1, counterM) = y_Kreis(1, (counterM+stelle_Pk)) - y_ML
-    M = mM * Abstand_M
+    M(1, counterM) = mM * Abstand_M(1, counterM)
+    
+    if M(1, counterM) < 0 then
+        M(1, counterM) = 0;
+    end
     
 end
 // ENDe Moment
@@ -489,7 +494,7 @@ end
 // Anfang Drehzahl
 counterS = 0;
 n = zeros(1, stelle_P0 - stelle_Pk); 
-while counterS < stelle_P0 - stelle_Pk
+while counterS <= stelle_P0 - stelle_Pk
     x_S_Auslesen = [Punkt_B(1,1), x_Kreis(1, counterS + stelle_Pk)];
     y_S_Auslesen = [Punkt_B(1,2), y_Kreis(1, counterS + stelle_Pk)];
     
