@@ -1,14 +1,16 @@
 // P0 wird ganz zum schluss anderes berechnet also ist der RFE berechenbar
 
 
-// Kreis muss die X_achse schneiden !!!!
-
 // Punkte am Kreis nicht mit der While schleife berechnen sondern mit der Kreisgleichung !!
 
 // Werte werden mittel Auswerteverhafren ausgeählt, wird sich also alles noch verändern
 I = [35; 0.909; 36.621; 10 ;4 ;2 ]; // In AmpereI = [0.22; 0.255; 0.289; 0.37; 0.5; 0.78];
 U = [380; 246.8; 304.1; 39; 80; 150]; // In Volt
 phi = [69.8; 3.2; 79.126; 63; 77; 54];
+nN = 1400; // Werte sind aus der Laborübung
+nsyn = 1500;
+m1 = 3;
+U1str = 380/sqrt(3);
 // Ende Werte einlesen
 
 
@@ -19,6 +21,7 @@ phi = [69.8; 3.2; 79.126; 63; 77; 54];
 
 // Anfang Verschiedene Zeichenfenster
 schlupfgerade = 1;
+kennlinien = 2;
 // Ende Verschieden Zeichenfenster
 
 
@@ -122,8 +125,19 @@ while fehler == 1 // Achtung noch in der Schleife das nicht immer die gleichen W
             end
             counter = counter +1;
         end
-        // Ende Lage des Kreises Überprüfen
         
+        // Schauen ob Kreis die x-Achse schneidet
+        
+        // Ende Lage des Kreises Überprüfen
+        counter = 1;
+        fehler = 1;
+        while counter <= Kreis_Punkte
+            if y_Kreis(1, counter) <= 0 then
+                fehler = 0;
+                break;
+            end
+            counter = counter +1;
+        end
         
         if fehler == 0 then 
             fehlercounter = 5;
@@ -186,8 +200,10 @@ plot(Punkt_0(1,1),Punkt_0(1,2), '+red');
 Ik = I(1,1) * cosd(phi(1,1)) + %i*I(1,1)*sind(phi(1,1));
 Punkt_k = ones(1,2);
 Punkt_k(1,1) = imag(Ik); // x wert
-Punkt_k(1,2) = real(Ik); // y-wert
-plot(Punkt_k(1,1), Punkt_k(1,2), '+red');
+Punkt_k(1,2) = real(Ik); // y-wert 
+
+//Der richtige Kurzschlusspunkt wird später nochmal ausgerechnet
+
 
     // Punend
 // es sind x Anzahl an xWerten zwischen der x-Achse und dem Pk die Hälfte der Anzahl an Punkten was dazwischen liegen entspricht meinem Punend
@@ -206,6 +222,16 @@ while counterPk <= Kreis_Punkte
     end
     counterPk = counterPk +1;
 end
+
+
+
+// Hier wird der Kurzschlusspunkt ausgebessert
+Punkt_k(1,1) = x_Kreis(1, stelle_Pk);
+Punkt_k(1,2) = y_Kreis(1, stelle_Pk);
+
+plot(Punkt_k(1,1), Punkt_k(1,2), '+red');
+
+
 
 // Ausrechnen an wievlieter stellte die x achse und der Kreis schneiden (rechts)
 
@@ -336,7 +362,7 @@ stelle_MA = stelle_Pk;
 x_MA = x_Kreis(1, stelle_MA);
 y_MA = k_ML * x_MA + d_ML;
 
-Abstand_ML = y_Kreis(1, stelle_Pk) - y_ML
+Abstand_MA = y_Kreis(1, stelle_Pk) - y_ML
 
 x_MA = [x_MA, x_Kreis(1, stelle_MA)];
 y_MA = [y_MA, y_Kreis(1, stelle_MA)];
@@ -345,6 +371,19 @@ plot(x_MA, y_MA);
 // Ende AnlaufMoment
 
 
+
+
+// Anfang Kipp und Anlauf- momente Auslesen
+mI = 0.015; // in A/m gerechnet, in Mathcad einmal ausgerechnet, um aufs richtige Mk zu kommen
+// Weis nicht ob das passt bei anderen Ortskurven
+mp = m1 * U1str * mI;
+mM = 9.55 * mp/(nN / 60);
+
+Mk = mM * Abstand_Mk;
+MA = mM * Abstand_MA;
+disp(Mk);
+disp(MA);
+// Ende Kipp und Anlauf- momente Auslesen
 
 
 
@@ -387,13 +426,13 @@ y_Linie_Pb_Punend = [Punkt_B(1, 2), Punkt_unend(1, 2)];
 k_Linie_Pb_Punend = (y_Linie_Pb_Punend(1,2)-y_Linie_Pb_Punend(1,1))/(x_Linie_Pb_Punend(1,2)-x_Linie_Pb_Punend(1,1));
 d_Linie_Pb_Punend = y_Linie_Pb_Punend(1,1) - k_Linie_Pb_Punend * x_Linie_Pb_Punend(1,1);
 
-
+/*  // Pb zu Pk wird nicht benötigt
 x_Linie_Pb_Pk = [Punkt_B(1, 1), Punkt_k(1, 1)];
 y_Linie_Pb_Pk = [Punkt_B(1, 2), Punkt_k(1, 2)];
 
 k_Linie_Pb_Pk = (y_Linie_Pb_Pk(1,2)-y_Linie_Pb_Pk(1,1))/(x_Linie_Pb_Pk(1,2)-x_Linie_Pb_Pk(1,1));
 d_Linie_Pb_Pk = y_Linie_Pb_Pk(1,1) - k_Linie_Pb_Pk * x_Linie_Pb_Pk(1,1);
-
+*/
 
 x_Linie_Pb_P0 = [Punkt_B(1, 1), Punkt_0(1, 1)];
 y_Linie_Pb_P0 = [Punkt_B(1, 2), Punkt_0(1, 2)];
@@ -413,9 +452,65 @@ d_Schlupfgerade = y_Schlupfgerade(1, 1) - k_Schlupfgerade * x_Schlupfgerade(1, 1
 x_Schlupfgerade(1, 2) = (d_Linie_Pb_P0- d_Schlupfgerade)/(k_Schlupfgerade - k_Linie_Pb_P0);
 y_Schlupfgerade(1, 2) = k_Schlupfgerade * x_Schlupfgerade(1, 2) + d_Schlupfgerade;
 
+laenge_Schlupfgerade = y_Schlupfgerade(1,1) - y_Schlupfgerade(1,2);
+
 plot(x_Linie_Pb_Punend, y_Linie_Pb_Punend);
-plot(x_Linie_Pb_Pk, y_Linie_Pb_Pk);
+//plot(x_Linie_Pb_Pk, y_Linie_Pb_Pk);
 plot(x_Linie_Pb_P0, y_Linie_Pb_P0);
 plot(x_Schlupfgerade, y_Schlupfgerade, 'c')
 xgrid();
 // Ende Schlupfgerade zeichen
+
+
+
+
+// Anfang Drehzahl Momentenverlauf
+
+// Anfang Moment
+counterM = 0;
+x_ML = 0;
+y_ML = 0;
+Abstand_M = zeros(1, stelle_P0 - stelle_Pk);
+
+while counterM < (stelle_P0 - stelle_Pk)
+    x_ML = x_Kreis(1, (counterM+stelle_Pk));
+    y_ML = k_ML * x_ML + d_ML;
+    
+    
+    counterM = counterM + 1;
+    
+    Abstand_M(1, counterM) = y_Kreis(1, (counterM+stelle_Pk)) - y_ML
+    M = mM * Abstand_M
+    
+end
+// ENDe Moment
+
+
+// Anfang Drehzahl
+counterS = 0;
+n = zeros(1, stelle_P0 - stelle_Pk); 
+while counterS < stelle_P0 - stelle_Pk
+    x_S_Auslesen = [Punkt_B(1,1), x_Kreis(1, counterS + stelle_Pk)];
+    y_S_Auslesen = [Punkt_B(1,2), y_Kreis(1, counterS + stelle_Pk)];
+    
+    
+    k_S_Auslesen = (y_S_Auslesen(1,2)-y_S_Auslesen(1,1))/(x_S_Auslesen(1,2)-x_S_Auslesen(1,1));
+    d_S_Auslesen = y_S_Auslesen(1,1) - k_S_Auslesen * x_S_Auslesen(1,1);
+    
+    x_S_schneiden = (d_Schlupfgerade - d_S_Auslesen)/(k_S_Auslesen- k_Schlupfgerade );
+    y_S_schneiden = k_S_Auslesen * x_S_schneiden + d_S_Auslesen;
+    
+    
+    counterS = counterS + 1;
+    
+    Abstand_S = y_S_schneiden - y_Schlupfgerade(1, 2);
+    Schlupf(1, counterS) = Abstand_S/laenge_Schlupfgerade;
+    n(1, counterS) = nsyn * (1-Schlupf(1, counterS));
+    
+end
+// Ende Drehzahl
+// Ende Drehzahl Momentenverlauf
+show_window(kennlinien);
+
+plot(n ,M);
+xgrid(1);
