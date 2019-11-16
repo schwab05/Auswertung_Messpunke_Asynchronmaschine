@@ -1,7 +1,16 @@
 // P0 wird ganz zum schluss anderes berechnet also ist der RFE berechenbar
 
 
-// Punkte am Kreis nicht mit der While schleife berechnen sondern mit der Kreisgleichung !!
+// Die Momentenberechnung passt nich !!!!!!
+
+// mM muss anders berechnet werden
+
+// Pb:
+// Die Linie P0&Pb steht im rechten winkel zu Punend&Pb
+
+
+
+
 
 // Werte werden mittel Auswerteverhafren ausgeählt, wird sich also alles noch verändern
 I = [35; 0.909; 36.621; 10 ;4 ;2 ]; // In AmpereI = [0.22; 0.255; 0.289; 0.37; 0.5; 0.78];
@@ -415,10 +424,21 @@ plot(Punkt_k(1, 1), Punkt_k(1, 2), '+red');
 // Anfang Schlupfgerade zeichnen
 
 // Anfang Punkt B bestimmen
-stelle_PunktB = stelle_XAchse_rechts - stelle_Punend;
+
+
+
+stelle_PunktB = stelle_XAchse_rechts - stelle_Pk;
 Punkt_B = [x_Kreis(1, stelle_PunktB), y_Kreis(1, stelle_PunktB)];
 plot(Punkt_B(1,1), Punkt_B(1,2), '+green')
+
+
+
+
 // Ende Punkt B bestimmen
+
+
+
+
 
 // Hilfslinien für die Konstruktin der Schlupfgerade:
 x_Linie_Pb_Punend = [Punkt_B(1, 1), Punkt_unend(1, 1)];
