@@ -513,6 +513,10 @@ while counterS <= stelle_P0 - stelle_Pk
     x_S_Auslesen = [Punkt_B(1,1), x_Kreis(1, counterS + stelle_Pk)];
     y_S_Auslesen = [Punkt_B(1,2), y_Kreis(1, counterS + stelle_Pk)];
     
+    if x_S_Auslesen(1,1) == x_S_Auslesen(1,2) then
+        x_S_Auslesen(1,2) = x_S_Auslesen(1,2) -0.01;
+    end
+    
     
     k_S_Auslesen = (y_S_Auslesen(1,2)-y_S_Auslesen(1,1))/(x_S_Auslesen(1,2)-x_S_Auslesen(1,1));
     d_S_Auslesen = y_S_Auslesen(1,1) - k_S_Auslesen * x_S_Auslesen(1,1);
@@ -525,6 +529,7 @@ while counterS <= stelle_P0 - stelle_Pk
     
     Abstand_S = y_S_schneiden - y_Schlupfgerade(1, 2);
     Schlupf(1, counterS) = Abstand_S/laenge_Schlupfgerade;
+    Schlupf(1, 1) = 1;
     n(1, counterS) = nsyn * (1-Schlupf(1, counterS));
     
 end
@@ -534,3 +539,4 @@ show_window(kennlinien);
 
 plot(n ,M);
 xgrid(1);
+
